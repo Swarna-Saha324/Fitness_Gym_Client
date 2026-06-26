@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
+
 import { usePathname } from "next/navigation";
+import Link from "next/link"; // Next Link verified placement
 import {
-  Button,
   Dropdown,
   Avatar,
 } from "@heroui/react";
@@ -108,32 +108,44 @@ export default function AppNavbar() {
                     src={user.avatar}
                   />
                 </Dropdown.Trigger>
-                <Dropdown.Popover className="bg-[#0F172A] border border-slate-800 rounded-lg p-1">
-                  <Dropdown.Menu aria-label="Profile Actions" className="text-white">
-                    <Dropdown.Item id="profile" textValue="Profile Info" className="h-14 border-b border-slate-800 rounded-none">
-                      <p className="font-normal text-slate-400 text-xs">Signed in as</p>
-                      <p className="font-semibold text-[#FFFFFF]">{user.email}</p>
-                    </Dropdown.Item>
-                    <Dropdown.Item id="role" textValue="User Role" className="capitalize text-xs text-slate-400">
-                      Role: <span className="text-[#F59E0B] font-semibold">{user.role}</span>
-                    </Dropdown.Item>
-                    <Dropdown.Item id="dashboard" textValue="Dashboard Link" href={`/dashboard/${user.role}`} className="hover:bg-slate-800 rounded-md">
+                <Dropdown.Menu aria-label="Profile Actions" className="text-white">
+                  <Dropdown.Item key="profile" textValue="Profile Info" className="h-14 border-b border-slate-800 rounded-none">
+                    <p className="font-normal text-slate-400 text-xs">Signed in as</p>
+                    <p className="font-semibold text-[#FFFFFF]">{user.email}</p>
+                  </Dropdown.Item>
+                  <Dropdown.Item key="role" textValue="User Role" className="capitalize text-xs text-slate-400">
+                    Role: <span className="text-[#F59E0B] font-semibold">{user.role}</span>
+                  </Dropdown.Item>
+                  <Dropdown.Item key="dashboard" textValue="Dashboard Link" className="hover:bg-slate-800 rounded-md p-0">
+                    <Link href={`/dashboard/${user.role}`} className="block w-full h-full px-4 py-2">
                       My Dashboard
-                    </Dropdown.Item>
-                    <Dropdown.Item id="logout" textValue="Logout" color="danger" className="text-rose-500 hover:bg-rose-950/30 rounded-md">
-                      Log Out
-                    </Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown.Popover>
+                    </Link>
+                  </Dropdown.Item>
+                  <Dropdown.Item 
+                    key="logout" 
+                    textValue="Logout" 
+                    color="danger" 
+                    className="text-rose-500 hover:bg-rose-950/30 rounded-md"
+                  >
+                    Log Out
+                  </Dropdown.Item>
+                </Dropdown.Menu>
               </Dropdown>
             ) : (
               <div className="flex items-center gap-4">
-                <Button as={Link} href="/login" variant="light" size="sm" className="text-[#FFFFFF] hover:bg-slate-800">
+                <Link 
+                  href="/login" 
+                  className="text-sm font-medium text-[#FFFFFF] hover:bg-slate-800 px-3 py-1.5 rounded-md transition-colors"
+                >
                   Login
-                </Button>
-                <Button as={Link} href="/register" size="sm" className="bg-[#F59E0B] text-[#0F172A] font-semibold shadow-lg shadow-amber-500/20 hover:bg-amber-600 transition-all">
+                </Link>
+                
+                <Link 
+                  href="/register" 
+                  className="text-sm font-semibold bg-[#F59E0B] text-[#0F172A] px-4 py-1.5 rounded-md shadow-lg shadow-amber-500/20 hover:bg-amber-600 transition-all"
+                >
                   Sign Up
-                </Button>
+                </Link>
               </div>
             )}
           </div>

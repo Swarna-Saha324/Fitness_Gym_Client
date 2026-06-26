@@ -5,6 +5,7 @@ import AppNavbar from "../Components/Navbar";
 import AppFooter from "@/Components/Footer";
 
 
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -33,6 +34,7 @@ export default function RootLayout({ children }) {
        <ToastContainer />
         {children}
          <AppFooter/>
+        
         </body>
        
     
