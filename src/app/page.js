@@ -1,9 +1,14 @@
 import Image from "next/image";
-
+import HeroBanner from "../Components/HeroBanner";
+import Features from "@/Components/Feature";
+import Stats from "@/Components/Stats";
 export default function Home() {
   return (
    <div>
-     hello, world
+    <HeroBanner />
+    <Features />
+    <Stats />
+
    </div>
   );
 }
