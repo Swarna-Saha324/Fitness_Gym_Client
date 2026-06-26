@@ -12,8 +12,26 @@ export const auth = betterAuth({
     client
   }),
 
+ 
+
+
     emailAndPassword: { 
     enabled: true, 
   }, 
+
+   user: {
+    // Optional: if you don't provide a schema, the default schema will be used.
+    additionalFields: {
+      role: {
+        type: String,
+        default: "member",
+      },
+
+      isBlocked: {
+        type: Boolean,
+        default: false,
+      }
+    }
+  }
 
 });

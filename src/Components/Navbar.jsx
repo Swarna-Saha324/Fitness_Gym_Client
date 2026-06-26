@@ -1,26 +1,24 @@
 "use client";
 
 import React, { useState } from "react";
-
-import { usePathname } from "next/navigation";
-import Link from "next/link"; // Next Link verified placement
-import {
-  Dropdown,
-  Avatar,
-} from "@heroui/react";
+import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
+import { authClient } from "@/lib/auth-client";
 
 export default function AppNavbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
 
-  // --- Mock Authentication State ---
-  const isAuthenticated = false; 
-  const user = {
-    name: "Swarna Saha",
-    email: "swarna@example.com",
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
-    role: "admin", // "member", "trainer", or "admin"
-  };
+  // Better-Auth real session integration
+  const { data: session, isPending } = authClient.useSession();
+  
+  const isAuthenticated = !!session;
+  const user = session?.user;
+
+  // Static fallback data for dashboard dynamic parsing if role doesn't exist yet
+  const userRole = user?.role || "member"; 
 
   // Public Navigation Links
   const navLinks = [
@@ -31,18 +29,28 @@ export default function AppNavbar() {
 
   const isActive = (href) => pathname === href;
 
+  const handleLogout = async () => {
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          setIsProfileOpen(false);
+          router.push("/login");
+        },
+      },
+    });
+  };
+
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-slate-800 bg-[#0F172A]/80 backdrop-blur-md text-[#FFFFFF]">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           
-          {/* Left Side: Brand & Mobile Menu Toggle */}
+          {/* Left Side: Brand Logo */}
           <div className="flex items-center gap-4">
-            {/* Mobile Burger Menu Button */}
+            {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="inline-flex items-center justify-center rounded-md p-2 text-slate-400 hover:bg-slate-800 hover:text-white sm:hidden focus:outline-none"
-              aria-label="Toggle Menu"
             >
               {isMenuOpen ? (
                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
@@ -51,7 +59,6 @@ export default function AppNavbar() {
               )}
             </button>
 
-            {/* Brand Logo */}
             <Link href="/" className="flex items-center gap-2 font-bold text-xl tracking-tight">
               <span className="w-3 h-6 rounded-sm bg-[#F59E0B]" />
               <span className="text-[#FFFFFF]">
@@ -77,61 +84,71 @@ export default function AppNavbar() {
               </Link>
             ))}
             
-            {/* Conditional Dashboard Link */}
+            {/* Real Session Conditional Dashboard Link */}
             {isAuthenticated && (
               <Link
-                href={`/dashboard/${user.role}`}
+                href={`/dashboard/${userRole}`}
                 className={`text-sm font-medium transition-colors relative py-1 ${
-                  isActive("/dashboard") ? "text-[#F59E0B] font-semibold" : "text-slate-400 hover:text-[#FFFFFF]"
+                  pathname.startsWith("/dashboard") ? "text-[#F59E0B] font-semibold" : "text-slate-400 hover:text-[#FFFFFF]"
                 }`}
               >
                 Dashboard
-                {isActive("/dashboard") && (
+                {pathname.startsWith("/dashboard") && (
                   <span className="absolute bottom-0 left-0 w-full h-[2px] bg-[#F59E0B] rounded-full" />
                 )}
               </Link>
             )}
           </div>
 
-          {/* Right Side: Auth Actions / Profile Dropdown */}
+          {/* Right Side: Dynamic Session Conditional Content */}
           <div className="flex items-center">
-            {isAuthenticated ? (
-              <Dropdown placement="bottom-end" className="bg-[#0F172A] border border-slate-800 text-[#FFFFFF]">
-                <Dropdown.Trigger>
-                  <Avatar
-                    isBordered
-                    as="button"
-                    className="transition-transform border-[#F59E0B] cursor-pointer"
-                    color="warning"
-                    name={user.name}
-                    size="sm"
-                    src={user.avatar}
+            {isPending ? (
+              <div className="w-8 h-8 rounded-full border-2 border-slate-700 border-t-[#F59E0B] animate-spin" />
+            ) : isAuthenticated ? (
+              /* LOGGED IN STATUS: SHOW IMAGE WITH LOGOUT INTERACTION DROPDOWN */
+              <div className="relative">
+                <button
+                  onClick={() => setIsProfileOpen(!isProfileOpen)}
+                  className="flex items-center focus:outline-none focus:ring-2 focus:ring-[#F59E0B] rounded-full"
+                >
+                  <img
+                    className="h-9 w-9 rounded-full object-cover border-2 border-[#F59E0B] cursor-pointer"
+                    src={user?.image || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80"}
+                    alt={user?.name || "User Avatar"}
                   />
-                </Dropdown.Trigger>
-                <Dropdown.Menu aria-label="Profile Actions" className="text-white">
-                  <Dropdown.Item key="profile" textValue="Profile Info" className="h-14 border-b border-slate-800 rounded-none">
-                    <p className="font-normal text-slate-400 text-xs">Signed in as</p>
-                    <p className="font-semibold text-[#FFFFFF]">{user.email}</p>
-                  </Dropdown.Item>
-                  <Dropdown.Item key="role" textValue="User Role" className="capitalize text-xs text-slate-400">
-                    Role: <span className="text-[#F59E0B] font-semibold">{user.role}</span>
-                  </Dropdown.Item>
-                  <Dropdown.Item key="dashboard" textValue="Dashboard Link" className="hover:bg-slate-800 rounded-md p-0">
-                    <Link href={`/dashboard/${user.role}`} className="block w-full h-full px-4 py-2">
+                </button>
+
+                {/* Secure Native Fallback Profile Menu Dropdown */}
+                {isProfileOpen && (
+                  <div className="absolute right-0 mt-2 w-56 origin-top-right rounded-xl bg-[#0F172A] border border-slate-800 shadow-xl py-2 text-white z-50">
+                    <div className="px-4 py-2 border-b border-slate-800/80">
+                      <p className="font-normal text-slate-400 text-[11px]">Signed in as</p>
+                      <p className="font-semibold text-sm truncate text-white">{user?.email}</p>
+                    </div>
+                    
+                    <div className="px-4 py-1.5 capitalize text-[11px] text-slate-400">
+                      Role: <span className="text-[#F59E0B] font-semibold">{userRole}</span>
+                    </div>
+
+                    <Link 
+                      href={`/dashboard/${userRole}`}
+                      onClick={() => setIsProfileOpen(false)}
+                      className="block w-full text-left px-4 py-2 text-sm text-slate-300 hover:bg-slate-800 transition-colors"
+                    >
                       My Dashboard
                     </Link>
-                  </Dropdown.Item>
-                  <Dropdown.Item 
-                    key="logout" 
-                    textValue="Logout" 
-                    color="danger" 
-                    className="text-rose-500 hover:bg-rose-950/30 rounded-md"
-                  >
-                    Log Out
-                  </Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
+
+                    <button
+                      onClick={handleLogout}
+                      className="block w-full text-left px-4 py-2 text-sm text-rose-400 hover:bg-rose-950/30 transition-colors border-t border-slate-800/60 mt-1"
+                    >
+                      Log Out
+                    </button>
+                  </div>
+                )}
+              </div>
             ) : (
+              /* LOGGED OUT STATUS: SHOW LOGIN AND SIGNUP ACTIONS */
               <div className="flex items-center gap-4">
                 <Link 
                   href="/login" 
@@ -153,7 +170,7 @@ export default function AppNavbar() {
         </div>
       </div>
 
-      {/* Mobile Drawer Dropdown Menu */}
+      {/* Mobile Drawer Navigation */}
       {isMenuOpen && (
         <div className="sm:hidden bg-[#0F172A] border-t border-slate-800 px-4 pt-2 pb-4 space-y-1">
           {navLinks.map((link) => (
@@ -170,13 +187,13 @@ export default function AppNavbar() {
           ))}
           {isAuthenticated && (
             <Link
-              href={`/dashboard/${user.role}`}
+              href={`/dashboard/${userRole}`}
               onClick={() => setIsMenuOpen(false)}
               className={`block rounded-md px-3 py-2 text-base font-medium ${
-                isActive("/dashboard") ? "bg-slate-800 text-[#F59E0B] font-bold" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                pathname.startsWith("/dashboard") ? "bg-slate-800 text-[#F59E0B] font-bold" : "text-slate-300 hover:bg-slate-800 hover:text-white"
               }`}
             >
-              Dashboard <span className="text-xs uppercase px-2 py-0.5 rounded bg-slate-900 text-amber-400 ml-2">{user.role}</span>
+              Dashboard <span className="text-[10px] uppercase px-2 py-0.5 rounded bg-slate-900 text-amber-400 ml-2">{userRole}</span>
             </Link>
           )}
         </div>

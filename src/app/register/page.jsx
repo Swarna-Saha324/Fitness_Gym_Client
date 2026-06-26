@@ -13,6 +13,7 @@ export default function SignupPage() {
     email: "",
     image: "",
     password: "",
+    role: "member", // Default configuration state set to member
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -35,11 +36,13 @@ export default function SignupPage() {
 
     setLoading(true);
 
+    // Better-Auth email signup with additional backend metadata field passing
     const { error: authError } = await authClient.signUp.email({
       email: formData.email,
       password: formData.password,
       name: formData.name,
       image: formData.image || undefined,
+      role: formData.role, // Dynamically parsing the selected role schema to MongoDB adapter
     });
 
     setLoading(false);
@@ -55,7 +58,7 @@ export default function SignupPage() {
     <div className="min-h-screen bg-[#090D1A] flex items-center justify-center p-4 md:p-6 lg:p-8 text-white">
       <div className="w-full max-w-5xl grid md:grid-cols-12 bg-[#0F1424] rounded-2xl overflow-hidden border border-slate-800 shadow-2xl min-h-[600px]">
         
-        {/* LEFT SIDE: Promotional Branding Card */}
+        {/* LEFT SIDE: Branding */}
         <div className="md:col-span-5 bg-gradient-to-br from-[#291A05] via-[#0F1424] to-[#090D1A] p-8 md:p-10 flex flex-col justify-between relative overflow-hidden border-r border-slate-800/50">
           <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_top_right,rgba(245,158,11,0.12),transparent_50%)] pointer-events-none" />
           <div>
@@ -83,7 +86,7 @@ export default function SignupPage() {
           <div className="text-xs text-slate-500 mt-8 z-10">© 2026 ApexFit. All rights reserved.</div>
         </div>
 
-        {/* RIGHT SIDE: Vertical Form Container */}
+        {/* RIGHT SIDE: Dynamic Stacked Form */}
         <div className="md:col-span-7 p-8 md:p-12 flex flex-col justify-center bg-[#0B0F19]">
           <div className="w-full max-w-md mx-auto">
             <div className="mb-6">
@@ -101,7 +104,7 @@ export default function SignupPage() {
             )}
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              {/* Native Input Structures with Custom Styles */}
+              {/* Full Name */}
               <div className="flex flex-col gap-1.5">
                 <label className="text-slate-400 text-xs font-semibold">Full Name</label>
                 <input
@@ -111,6 +114,7 @@ export default function SignupPage() {
                 />
               </div>
 
+              {/* Email */}
               <div className="flex flex-col gap-1.5">
                 <label className="text-slate-400 text-xs font-semibold">Email address</label>
                 <input
@@ -120,6 +124,7 @@ export default function SignupPage() {
                 />
               </div>
 
+              {/* Profile Image */}
               <div className="flex flex-col gap-1.5">
                 <label className="text-slate-400 text-xs font-semibold">Profile Image (optional)</label>
                 <input
@@ -129,6 +134,20 @@ export default function SignupPage() {
                 />
               </div>
 
+              {/* Account Category Role Selection Dropdown */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-slate-400 text-xs font-semibold">Account Category</label>
+                <select
+                  className="bg-slate-900/80 border border-slate-800 hover:border-slate-700 focus:border-[#F59E0B] focus:outline-none h-11 rounded-xl px-3 text-white text-sm transition-all cursor-pointer appearance-none"
+                  value={formData.role}
+                  onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                >
+                  <option value="member" className="bg-[#0B0F19] text-white">Member (Default Athlete)</option>
+                  <option value="trainer" className="bg-[#0B0F19] text-white">Fitness Trainer</option>
+                </select>
+              </div>
+
+              {/* Password */}
               <div className="flex flex-col gap-1.5">
                 <label className="text-slate-400 text-xs font-semibold">Password</label>
                 <input
@@ -138,6 +157,7 @@ export default function SignupPage() {
                 />
               </div>
 
+              {/* Submit Button */}
               <button
                 type="submit" disabled={loading}
                 className="w-full bg-[#F59E0B] text-[#090D1A] font-bold h-11 rounded-xl mt-2 hover:bg-amber-600 active:scale-[0.98] transition-all shadow-lg shadow-amber-500/10 text-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:pointer-events-none"
