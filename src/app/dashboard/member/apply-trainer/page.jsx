@@ -1,10 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
+import { authClient } from "@/lib/auth-client";
 
 export default function ApplyTrainerPage() {
+  const { data: session } = authClient.useSession();
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  
   const [formData, setFormData] = useState({
     experience: "",
     specialty: "Yoga",
@@ -14,12 +18,47 @@ export default function ApplyTrainerPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    
-    // API logic to save trainer proposal metadata to your MongoDB collections
-    setTimeout(() => {
+    setSuccessMessage("");
+    setErrorMessage("");
+
+    // Validate if current session details tracking data array blocks exist
+    if (!session?.user?.email) {
+      setErrorMessage("Authentication required. Please login again.");
       setLoading(false);
-      setSuccess(true);
-    }, 1200);
+      return;
+    }
+
+    // Creating structured object payloads containing session context variables
+    const applicationPayload = {
+      name: session.user.name,
+      email: session.user.email,
+      experience: formData.experience,
+      specialty: formData.specialty,
+      bio: formData.bio,
+    };
+
+    try {
+      const response = await fetch("http://localhost:5000/api/apply-trainer", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(applicationPayload),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setSuccessMessage('✓ Application submitted successfully! Your tracking status is now set to "Pending".');
+        setFormData({ experience: "", specialty: "Yoga", bio: "" }); // Clear form states
+      } else {
+        setErrorMessage(data.message || "Something went wrong while submitting application.");
+      }
+    } catch (error) {
+      setErrorMessage("Failed to connect to the backend server.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -31,11 +70,19 @@ export default function ApplyTrainerPage() {
         </p>
       </div>
 
-      {success ? (
+      {successMessage && (
         <div className="mt-6 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm p-4 rounded-xl font-medium">
-          ✓ Application submitted successfully! Your tracking status is now set to "Pending".
+          {successMessage}
         </div>
-      ) : (
+      )}
+
+      {errorMessage && (
+        <div className="mt-6 bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm p-4 rounded-xl font-medium">
+          ❌ {errorMessage}
+        </div>
+      )}
+
+      {!successMessage && (
         <form onSubmit={handleSubmit} className="space-y-5 mt-6">
           <div className="flex flex-col gap-1.5">
             <label className="text-slate-400 text-xs font-semibold uppercase tracking-wider">Years of Experience</label>

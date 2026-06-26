@@ -10,6 +10,18 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'images.unsplash.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'ibb.co.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'i.ibb.co', // Common variant for alternative direct link structures
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 
