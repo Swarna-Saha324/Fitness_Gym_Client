@@ -1,6 +1,8 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ToastContainer } from "react-toastify";
+import AppNavbar from "../Components/Navbar";
+import AppFooter from "@/Components/Footer";
 
 
 const geistSans = Geist({
@@ -24,8 +26,15 @@ export default function RootLayout({ children }) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-         <ToastContainer />
-      <body className="min-h-full flex flex-col">{children}</body>
+         
+      
+      <body className="min-h-full flex flex-col">
+         <AppNavbar/>
+       <ToastContainer />
+        {children}
+         <AppFooter/>
+        </body>
+       
     
     </html>
   );
