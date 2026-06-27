@@ -24,7 +24,7 @@ export default function AppNavbar() {
   const navLinks = [
     { label: "Home", href: "/" },
     { label: "All Classes", href: "/classes" },
-    { label: "Community Forum", href: "/forum" },
+    { label: "Community Forum", href: "/community-forum" },
   ];
 
   const isActive = (href) => pathname === href;
