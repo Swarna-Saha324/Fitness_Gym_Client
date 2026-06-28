@@ -30,7 +30,7 @@ export default function AddForumPostPage() {
     };
 
     try {
-      const response = await fetch("http://localhost:5000/api/forum", {
+      const response = await fetch("http://localhost:5000/api/forums", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -15,19 +15,23 @@ export default function AllClassesPage() {
   const categories = ["All", "Yoga", "Cardio", "Weights", "Combat", "Dance"];
 
   useEffect(() => {
-    // Fetch all public approved classes 
-    fetch("http://localhost:5000/api/public-classes")
-      .then((res) => res.json())
-      .then((data) => {
-        setClasses(data);
-        setFilteredClasses(data); // Initial view injection
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching available system classes:", err);
-        setLoading(false);
-      });
-  }, []);
+  setLoading(true);
+  fetch("http://localhost:5000/api/public-classes", { cache: "no-cache" })
+    .then((res) => res.json())
+    .then((data) => {
+      const classesArray = Array.isArray(data) ? data : [];
+      
+      setClasses(classesArray);
+      setFilteredClasses(classesArray); 
+      setLoading(false);
+    })
+    .catch((err) => {
+      console.error("Error fetching available system classes:", err);
+      setClasses([]);
+      setFilteredClasses([]);
+      setLoading(false);
+    });
+}, []);
 
   // 🎯 REAL-TIME SEARCH & FILTER ARRAYS LOGIC LOOP
   useEffect(() => {

@@ -56,7 +56,7 @@ export default function CheckoutForm({ clientSecret, classDetails, userContext }
         });
 
         if (confirmRes.ok) {
-          router.push("/dashboard/activity"); // Redirect straight to user's personal activity board
+          router.push("/dashboard/member/booked");
         }
       } catch (err) {
         console.error("Confirmation routine error:", err);

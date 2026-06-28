@@ -27,11 +27,16 @@ export default function DashboardSidebar() {
       { label: "My Classes", href: `/dashboard/trainer/my-classes` },
       { label: "Add Forum Post", href: `/dashboard/trainer/add-forum` },
     ],
-    admin: [
-      { label: "Overview", href: `/dashboard/admin` },
-      { label: "All Trainers", href: `/dashboard/admin/trainers` },
-      { label: "Applied Features", href: `/dashboard/admin/applied` },
-    ]
+   admin: [
+  { label: "📊 Overview", href: "/dashboard/admin" },
+  { label: "👥 Manage Users", href: "/dashboard/admin/users" },
+  { label: "📩 Applied Trainers", href: "/dashboard/admin/applied" },
+  { label: "🏋️ Manage Trainers", href: "/dashboard/admin/trainers" },
+  { label: "📝 Manage Classes", href: "/dashboard/admin/classes" },
+  { label: "💳 Transactions Ledger", href: "/dashboard/admin/transactions" },
+  { label: "📣 Add Forum Post", href: "/dashboard/admin/add-forum" },
+  { label: "🛡️ Moderation (Forums)", href: "/dashboard/admin/manage-forums" },
+]
   };
 
   // Extract links dynamically based on the active user role session

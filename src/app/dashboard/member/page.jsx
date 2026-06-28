@@ -6,23 +6,104 @@ import { authClient } from "@/lib/auth-client";
 export default function MemberOverviewPage() {
   const { data: session, isPending } = authClient.useSession();
   
-  // Simulated stats tracking matching your strict layout blueprint
+  // 🎯 ডাইনামিক স্টেট ট্র্যাকিং
   const [stats, setStats] = useState({
-    bookedClassesCount: 2,
-    favoritesCount: 1,
-    trainerApplicationStatus: "Pending", // Options: "none", "Pending", "Rejected"
-    adminFeedback: "Your experience years criteria did not meet our current requirements. Please re-apply with updated certifications.",
+    bookedClassesCount: 0,
+    favoritesCount: 0, // এটি আপনি চাইলে লোকালস্টোরেজ বা ফেভারিট এপিআই দিয়ে পরে করতে পারবেন
+    trainerApplicationStatus: "none", 
+    adminFeedback: "",
   });
 
-  // Simulated booking list items corresponding exactly to your structural visual sample
-  const [recentBookings, setRecentBookings] = useState([
-    { id: 1, name: "Cardio Blast HIIT", trainer: "Alex J.", schedule: "Tue, Thu, Sat at 06:00", price: 25 },
-    { id: 2, name: "Endurance Builder Bootcamp", trainer: "Sarah K.", schedule: "Mon, Wed, Fri at 08:00", price: 50 },
-  ]);
+  const [recentBookings, setRecentBookings] = useState([]);
+  const [loadingData, setLoadingData] = useState(true);
 
-  if (isPending) {
+ useEffect(() => {
+    if (session?.user?.email) {
+      setLoadingData(true);
+      
+      // 🚀 ১. ট্রানজেকশন/বুকিং ডাটা নিয়ে আসা (কাউন্টারসহ)
+      const fetchBookings = fetch(`http://localhost:5000/api/admin/transactions`, { cache: "no-cache" })
+        .then((res) => res.json())
+        .then((data) => {
+          const allTransactions = Array.isArray(data) ? data : [];
+          const userRecords = allTransactions.filter(
+            (booking) => booking.userEmail === session.user.email || booking.email === session.user.email
+          );
+          setRecentBookings(userRecords);
+          return userRecords.length;
+        })
+        .catch((err) => {
+          console.error("Error loading user bookings count:", err);
+          return 0;
+        });
+
+      // 🚀 ২. ফেভারিট ক্লাসের ডাটা নিয়ে আসা (কাউন্টার ডাইনামিক করার জন্য নতুন যুক্ত হলো)
+      const fetchFavorites = fetch(`http://localhost:5000/api/favorites?email=${session.user.email}`, { cache: "no-cache" })
+        .then((res) => {
+          if (res.ok) return res.json();
+          return [];
+        })
+        .then((favData) => {
+          const totalFavorites = Array.isArray(favData) ? favData.length : 0;
+          return totalFavorites;
+        })
+        .catch((err) => {
+          console.error("Error loading favorites count:", err);
+          return 0;
+        });
+
+      // 🚀 ৩. ট্রেইনার অ্যাপ্লিকেশন স্ট্যাটাস নিয়ে আসা (FIXED LOGIC)
+      const fetchTrainerStatus = fetch(`http://localhost:5000/api/users/trainer-status/${session.user.email}`, { cache: "no-cache" })
+        .then((res) => {
+          if (!res.ok) throw new Error("Network response was not ok");
+          return res.json();
+        })
+        .catch((err) => {
+          console.error("Error loading trainer application state:", err);
+          return null;
+        });
+
+      // 🔄 সব ডাটা একসাথে রেজলভ করে স্টেট আপডেট করা
+      Promise.all([fetchBookings, fetchFavorites, fetchTrainerStatus])
+        .then(([bookingsCount, favoritesCount, trainerData]) => {
+          
+          let displayStatus = "none";
+          let feedbackText = "";
+
+          // 🎯 ব্যাকএন্ডের ছোট হাতের স্ট্যাটাসকে ফ্রন্টএন্ড লেআউটের সাথে নিখুঁতভাবে ম্যাচ করানো হলো
+          if (trainerData && trainerData.status) {
+            const currentStatus = trainerData.status.toLowerCase(); // সেফটি কনভার্সন
+            
+            if (currentStatus === "pending") {
+              displayStatus = "Pending";
+            } else if (currentStatus === "rejected") {
+              displayStatus = "Rejected";
+            } else if (currentStatus === "approved") {
+              displayStatus = "Approved"; // যদি লেআউটে অ্যাপ্রুভড হ্যান্ডেল করতে চান
+            }
+            
+            feedbackText = trainerData.feedback || "";
+          }
+
+          // লাইভ স্টেট আপডেট
+          setStats({
+            bookedClassesCount: bookingsCount,
+            favoritesCount: favoritesCount,
+            trainerApplicationStatus: displayStatus, // ⚡ এটি এখন ডাইনামিক্যালি "Pending"/"Rejected"/"none" হবে
+            adminFeedback: feedbackText,
+          });
+        })
+        .catch((error) => console.error("Error in Promise.all dashboard stream:", error))
+        .finally(() => setLoadingData(false));
+
+    } else if (!isPending) {
+      setLoadingData(false);
+    }
+  }, [session, isPending]);
+  // 🔄 মেইন Better-auth সেশন অথবা ব্যাকএন্ড ডাটা লোডিং স্পিনার
+  if (isPending || loadingData) {
     return (
-      <div className="flex h-[60vh] items-center justify-center">
+      <div className="flex h-[60vh] items-center justify-center bg-[#090D1A]">
         <div className="w-10 h-10 rounded-full border-4 border-slate-800 border-t-[#F59E0B] animate-spin" />
       </div>
     );
@@ -82,7 +163,7 @@ export default function MemberOverviewPage() {
       {/* IDENTITY BASE GRID LAYER */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        {/* Profile Card Container (7 Columns) */}
+        {/* Profile Card Container */}
         <div className="lg:col-span-7 bg-[#0F1424] border border-slate-800 rounded-2xl p-6">
           <h3 className="text-sm font-bold text-slate-300 mb-5 tracking-tight">Profile Details</h3>
           <div className="flex items-center gap-5">
@@ -103,12 +184,11 @@ export default function MemberOverviewPage() {
           </div>
         </div>
 
-        {/* Trainer Application Conditional Handling Container (5 Columns) */}
+        {/* Trainer Application Conditional Handling */}
         <div className="lg:col-span-5 bg-[#0F1424] border border-slate-800 rounded-2xl p-6 flex flex-col justify-between">
           <div>
             <h3 className="text-sm font-bold text-slate-300 mb-4 tracking-tight">Trainer Application</h3>
             
-            {/* Conditional Styling States Container */}
             {stats.trainerApplicationStatus === "none" && (
               <div className="text-center py-4">
                 <p className="text-xs text-slate-400 mb-3">No application submitted yet.</p>
@@ -154,24 +234,32 @@ export default function MemberOverviewPage() {
         </div>
         
         <div className="divide-y divide-slate-800/60 space-y-3">
-          {recentBookings.map((booking) => (
-            <div key={booking.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 first:pt-0">
-              <div className="flex items-center gap-3.5">
-                <div className="h-10 w-10 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 shrink-0">
-                  🏋️
+          {recentBookings.length === 0 ? (
+            <p className="text-center py-6 text-slate-500 text-xs">No bookings found yet.</p>
+          ) : (
+            recentBookings.map((booking) => (
+              <div key={booking._id || booking.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 first:pt-0">
+                <div className="flex items-center gap-3.5">
+                  <div className="h-10 w-10 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 shrink-0">
+                    🏋️
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-white transition-colors hover:text-[#F59E0B] cursor-pointer">
+                      {booking.className || "Fitness Premium Course"}
+                    </h4>
+                    <p className="text-xs text-slate-400 mt-0.5">
+                      Trainer Email: <span className="text-slate-300 font-medium">{booking.trainerEmail || "Assigned Expert"}</span>
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="text-sm font-bold text-white transition-colors hover:text-[#F59E0B] cursor-pointer">{booking.name}</h4>
-                  <p className="text-xs text-slate-400 mt-0.5">Trainer: <span className="text-slate-300 font-medium">{booking.trainer}</span> • {booking.schedule}</p>
+                <div className="text-right shrink-0">
+                  <span className="text-sm font-extrabold text-[#F59E0B] bg-[#F59E0B]/10 px-3 py-1 rounded-lg border border-[#F59E0B]/10">
+                    ${booking.price}
+                  </span>
                 </div>
               </div>
-              <div className="text-right shrink-0">
-                <span className="text-sm font-extrabold text-[#F59E0B] bg-[#F59E0B]/10 px-3 py-1 rounded-lg border border-[#F59E0B]/10">
-                  ${booking.price}
-                </span>
-              </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
     </div>

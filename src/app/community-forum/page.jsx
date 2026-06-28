@@ -11,7 +11,7 @@ export default function CommunityForumPage() {
 
   // Core global data load initialization logic 
   const fetchForumFeed = () => {
-    fetch("http://localhost:5000/api/forum")
+    fetch("http://localhost:5000/api/forums")
       .then((res) => res.json())
       .then((data) => {
         setPosts(data);
@@ -30,7 +30,7 @@ export default function CommunityForumPage() {
   // 🎯 VOTE TRIGGER HANDLER CORE ACTION ROUTINE
   const handleVoteAction = async (postId, type) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/forum/${postId}/vote`, {
+      const response = await fetch(`http://localhost:5000/api/forums/${postId}/vote`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ voteType: type }) // Passes upvote or downvote context mapping
