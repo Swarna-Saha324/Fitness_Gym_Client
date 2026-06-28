@@ -47,50 +47,73 @@ export default function ClassDetailsPage() {
       });
   }, [id, session]);
 
-  // 🎯 BOOK NOW ACTION TRIGGER PIPELINE
+ // 🎯 BOOK NOW ACTION TRIGGER PIPELINE
   const handleBookingRedirect = () => {
+    if (!session) {
+      toast.error("Please login to book a class");
+      return;
+    }
+
+    // 🚨 STRICT ROLE VALIDATION GUARD
+    if (session?.user?.role === "trainer" || session?.user?.role === "admin") {
+      toast.error("Trainers or Admins are unauthorized to book training sessions!");
+      return;
+    }
+
     if (hasBooked) {
       toast.error("You have already booked this class");
       return;
     }
-    // Redirect context matrix query structure pass down to dedicated Stripe route wrapper
-    router.push(`/payment?classId=${classData._id}&price=${classData.price}&name=${encodeURIComponent(classData.name)}`);
+    
+    const targetName = classData?.name || classData?.className || "Fitness Class";
+    const targetPrice = classData?.price || 0;
+
+    router.push(`/payment?classId=${classData._id}&price=${targetPrice}&name=${encodeURIComponent(targetName)}`);
   };
 
-  // 🎯 FAVORITE CLICK TOGGLE HANDLER ROUTINE
+  // 🎯 CONDITIONAL ADD TO FAVORITES TOGGLE ACTION (এই ফাংশনটি ডিলিট হয়ে গিয়েছিল)
   const handleFavoriteToggle = async () => {
-    if (!session?.user?.email) {
+    if (!session) {
       toast.error("Please login to manage favorites");
       return;
     }
 
     try {
-      const response = await fetch("http://localhost:5000/api/favorites/toggle", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          classId: classData._id,
-          userEmail: session.user.email,
-          className: classData.name,
-          image: classData.image,
-          price: classData.price
-        }),
-      });
+      const response = await fetch(
+        "http://localhost:5000/api/favorites/toggle",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            classId: classData._id,
+            userEmail: session.user.email,
+            className: classData.name,
+            image: classData.image,
+            price: classData.price,
+          }),
+        }
+      );
 
       const resData = await response.json();
+
       if (response.ok && resData.success) {
         setHasFavorited(resData.isFavorited);
+
         if (resData.isFavorited) {
-          toast.success("Successfully added to your favorites!");
+          toast.success("Successfully added to Favorites!");
         } else {
-          toast.success("Removed from favorites");
+          toast.success("Removed from Favorites");
         }
+      } else {
+        toast.error(resData.message || "Something went wrong");
       }
     } catch (err) {
       console.error(err);
+      toast.error("Server Error");
     }
   };
-
   if (loading) {
     return (
       <div className="flex h-[70vh] items-center justify-center bg-[#090D1A]">
