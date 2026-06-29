@@ -27,33 +27,47 @@ export default function CommunityForumPage() {
     fetchForumFeed();
   }, []);
 
-  // 🎯 VOTE TRIGGER HANDLER CORE ACTION ROUTINE
-  const handleVoteAction = async (postId, type) => {
-    try {
-      const response = await fetch(`http://localhost:5000/api/forums/${postId}/vote`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ voteType: type }) // Passes upvote or downvote context mapping
-      });
+  // ... আগের ইমপোর্টগুলো
+const handleVoteAction = async (postId, type) => {
+  const userEmail = session?.user?.email; 
 
-      const data = await response.json();
-      if (response.ok && data.success) {
-        // Optimistic UI updates loop array tracking structure instantly matching 
-        setPosts(prevPosts => 
-          prevPosts.map(post => {
-            if (post._id === postId) {
-              return {
-                ...post,
-                upvotes: type === "upvote" ? (post.upvotes || 0) + 1 : (post.upvotes || 0),
-                downvotes: type === "downvote" ? (post.downvotes || 0) + 1 : (post.downvotes || 0)
-              };
-            }
-            return post;
-          })
-        );
+  if (!userEmail) {
+    alert("Please login to vote!");
+    return;
+  }
+
+  try {
+    const response = await fetch(`http://localhost:5000/api/forum/${postId}/vote`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ 
+        voteType: type, 
+        userEmail: userEmail 
+      })
+    });
+
+    const data = await response.json();
+    
+   if (data.success) {
+        // স্টেট আপডেট লজিক: নিশ্চিত করুন প্রপার্টির নাম ব্যাকএন্ডের সাথে মিলছে
+        setPosts(prev => prev.map(p => {
+          if (p._id === postId) {
+            // নতুন অ্যারে তৈরি করুন
+            const newUpVotes = type === "upvote" 
+              ? [...new Set([...(p.upVotes || []), userEmail])] 
+              : (p.upVotes || []).filter(e => e !== userEmail);
+            
+            const newDownVotes = type === "downvote" 
+              ? [...new Set([...(p.downVotes || []), userEmail])] 
+              : (p.downVotes || []).filter(e => e !== userEmail);
+
+            return { ...p, upVotes: newUpVotes, downVotes: newDownVotes };
+          }
+          return p;
+        }));
       }
     } catch (error) {
-      console.error("Voting collection dynamic trigger layer error tracking:", error);
+      console.error("Error:", error);
     }
   };
 
@@ -120,22 +134,21 @@ export default function CommunityForumPage() {
                     <div className="pt-4 border-t border-slate-800/60 flex items-center justify-between">
                       <div className="flex items-center gap-4 text-slate-400 text-xs">
                         {/* 👍 Thumbs Up Click Trigger */}
-                        <button 
-                          onClick={() => handleVoteAction(post._id, "upvote")}
-                          className="flex items-center gap-1.5 hover:text-emerald-400 transition-colors bg-slate-900/50 border border-slate-800/40 px-2.5 py-1.5 rounded-lg active:scale-95 duration-100"
-                        >
-                          <span>👍</span>
-                          <span className="font-semibold text-slate-300">{post.upvotes || 0}</span>
-                        </button>
+                       <button 
+                    onClick={() => handleVoteAction(post._id, "upvote")}
+                    className="flex items-center gap-1.5 hover:text-emerald-400 bg-slate-900 px-3 py-1.5 rounded-lg"
+                  >
+                    <span>👍</span>
+                    <span className="font-semibold">{post.upVotes?.length || 0}</span>
+                  </button>
 
-                        {/* 👎 Thumbs Down Click Trigger */}
-                        <button 
-                          onClick={() => handleVoteAction(post._id, "downvote")}
-                          className="flex items-center gap-1.5 hover:text-rose-400 transition-colors bg-slate-900/50 border border-slate-800/40 px-2.5 py-1.5 rounded-lg active:scale-95 duration-100"
-                        >
-                          <span>👎</span>
-                          <span className="font-semibold text-slate-300">{post.downvotes || 0}</span>
-                        </button>
+                  <button 
+                    onClick={() => handleVoteAction(post._id, "downvote")}
+                    className="flex items-center gap-1.5 hover:text-rose-400 bg-slate-900 px-3 py-1.5 rounded-lg"
+                  >
+                    <span>👎</span>
+                    <span className="font-semibold">{post.downVotes?.length || 0}</span>
+                  </button>
                       </div>
 
                       <Link
