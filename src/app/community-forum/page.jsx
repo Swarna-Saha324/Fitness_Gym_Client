@@ -12,7 +12,7 @@ export default function CommunityForumPage() {
   // Core global data load initialization logic 
   const fetchForumFeed = () => {
    // fetch ("http://localhost:5000/api/forums")
-   fetch(`process.env.NEXT_PUBLIC_BASE_URL/api/forums`)
+   fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/forums`)
       .then((res) => res.json())
       .then((data) => {
         setPosts(data);

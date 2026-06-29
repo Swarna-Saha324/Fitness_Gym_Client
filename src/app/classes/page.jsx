@@ -17,7 +17,7 @@ export default function AllClassesPage() {
   useEffect(() => {
   setLoading(true);
   //fetch("http://localhost:5000/api/public-classes", { cache: "no-cache" })
-  fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/public-classes"`, { cache: "no-cache" })
+  fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/public-classes`, { cache: "no-cache" })
     .then((res) => res.json())
     .then((data) => {
       const classesArray = Array.isArray(data) ? data : [];
