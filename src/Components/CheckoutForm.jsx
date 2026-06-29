@@ -53,11 +53,24 @@ export default function CheckoutForm({ clientSecret, classDetails, userContext }
             userName: userContext.name,
             transactionId: paymentIntent.id
           }),
+          
         });
 
         if (confirmRes.ok) {
           router.push("/dashboard/member/booked");
         }
+
+        if (confirmRes.ok) {
+  await fetch(`http://localhost:5000/api/classes/increment-booking/${classDetails.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userEmail: userContext.email })
+    });
+    
+    router.push("/dashboard/member/booked");
+    
+   );
+  }
       } catch (err) {
         console.error("Confirmation routine error:", err);
       } finally {

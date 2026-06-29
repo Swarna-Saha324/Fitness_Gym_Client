@@ -16,6 +16,7 @@ export default function ClassCard({ fitnessClass }) {
     description,
     attendees = []
   } = fitnessClass;
+  console.log("Card Data - Attendees:", fitnessClass.attendees);
 
   return (
     <div className="bg-[#0F1424] border border-slate-800/80 rounded-2xl overflow-hidden hover:border-slate-700 transition-all duration-300 flex flex-col justify-between group">
@@ -66,7 +67,9 @@ export default function ClassCard({ fitnessClass }) {
             </span>
             <span className="text-slate-500 text-xs">•</span>
             <span className="text-slate-400 text-xs">
+             
               👥 {attendees.length || 0} Booked
+              
             </span>
           </div>
 

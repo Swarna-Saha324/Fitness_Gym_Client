@@ -20,6 +20,10 @@ export default function BookedClassesPage() {
           if (!res.ok) throw new Error("Failed to fetch transaction records");
           return res.json();
         })
+
+        
+
+
         .then((data) => {
           // 🎯 ফিল্টার লজিক: ডাটাবেজের সব ট্রানজেকশন থেকে শুধুমাত্র এই ইউজারের ইমেইলের বুকিংগুলো আলাদা করা হচ্ছে
           const userRecords = data.filter(booking => booking.userEmail === session.user.email);
