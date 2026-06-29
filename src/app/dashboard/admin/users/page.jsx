@@ -6,7 +6,7 @@ export default function ManageUsers() {
   const [users, setUsers] = useState([]);
 
   const fetchUsers = () => {
-    fetch("http://localhost:5000/api/users") // Ensure you have a global get users route
+    fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/users`) // Ensure you have a global get users route
       .then(res => res.json())
       .then(data => setUsers(data));
   };
@@ -14,7 +14,7 @@ export default function ManageUsers() {
   useEffect(() => { fetchUsers(); }, []);
 
   const handleAction = async (id, action) => {
-    const res = await fetch(`http://localhost:5000/api/admin/users/${id}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/users/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action })

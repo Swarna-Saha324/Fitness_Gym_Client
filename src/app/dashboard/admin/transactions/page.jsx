@@ -5,7 +5,7 @@ export default function TransactionsLog() {
   const [txHistory, setTxHistory] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/admin/transactions")
+    fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/transactions`)
       .then(res => res.json())
       .then(data => setTxHistory(data));
   }, []);

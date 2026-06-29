@@ -7,7 +7,7 @@ export default function ManageTrainers() {
   const [trainers, setTrainers] = useState([]);
 
   const fetchTrainers = () => {
-    fetch("http://localhost:5000/api/trainers") // আপনার প্ল্যাটফর্মের সব একটিভ ট্রেইনারদের রুট
+    fetch(`${process.env.NEXT_PUBLIC_BASE_URL}0/api/trainers`) // আপনার প্ল্যাটফর্মের সব একটিভ ট্রেইনারদের রুট
       .then((res) => res.json())
       .then((data) => setTrainers(data || []))
       .catch((err) => console.error(err));
@@ -23,7 +23,7 @@ export default function ManageTrainers() {
     if (!confirmAction) return;
 
     try {
-      const res = await fetch("http://localhost:5000/api/admin/trainers/demote", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/trainers/demote`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
@@ -31,7 +31,7 @@ export default function ManageTrainers() {
 
       if (res.ok) {
         toast.success(`"${name}" has been successfully demoted to standard member.`);
-        fetchTrainers(); // রিফ্রেশ টেবিল ডাটা
+        fetchTrainers(); 
       } else {
         toast.error("Failed to strip trainer credentials.");
       }

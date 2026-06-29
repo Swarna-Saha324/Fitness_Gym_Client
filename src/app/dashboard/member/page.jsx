@@ -22,7 +22,7 @@ export default function MemberOverviewPage() {
       setLoadingData(true);
       
       // 🚀 ১. ট্রানজেকশন/বুকিং ডাটা নিয়ে আসা (কাউন্টারসহ)
-      const fetchBookings = fetch(`http://localhost:5000/api/admin/transactions`, { cache: "no-cache" })
+      const fetchBookings = fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/transactions`, { cache: "no-cache" })
         .then((res) => res.json())
         .then((data) => {
           const allTransactions = Array.isArray(data) ? data : [];
@@ -38,7 +38,7 @@ export default function MemberOverviewPage() {
         });
 
       // 🚀 ২. ফেভারিট ক্লাসের ডাটা নিয়ে আসা (কাউন্টার ডাইনামিক করার জন্য নতুন যুক্ত হলো)
-      const fetchFavorites = fetch(`http://localhost:5000/api/favorites?email=${session.user.email}`, { cache: "no-cache" })
+      const fetchFavorites = fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/favorites?email=${session.user.email}`, { cache: "no-cache" })
         .then((res) => {
           if (res.ok) return res.json();
           return [];
@@ -53,7 +53,7 @@ export default function MemberOverviewPage() {
         });
 
       // 🚀 ৩. ট্রেইনার অ্যাপ্লিকেশন স্ট্যাটাস নিয়ে আসা (FIXED LOGIC)
-      const fetchTrainerStatus = fetch(`http://localhost:5000/api/users/trainer-status/${session.user.email}`, { cache: "no-cache" })
+      const fetchTrainerStatus = fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/users/trainer-status/${session.user.email}`, { cache: "no-cache" })
         .then((res) => {
           if (!res.ok) throw new Error("Network response was not ok");
           return res.json();

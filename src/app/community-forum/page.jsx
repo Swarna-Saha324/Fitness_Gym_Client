@@ -11,7 +11,8 @@ export default function CommunityForumPage() {
 
   // Core global data load initialization logic 
   const fetchForumFeed = () => {
-    fetch("http://localhost:5000/api/forums")
+   // fetch ("http://localhost:5000/api/forums")
+   fetch(`process.env.NEXT_PUBLIC_BASE_URL/api/forums`)
       .then((res) => res.json())
       .then((data) => {
         setPosts(data);
@@ -37,7 +38,8 @@ const handleVoteAction = async (postId, type) => {
   }
 
   try {
-    const response = await fetch(`http://localhost:5000/api/forum/${postId}/vote`, {
+   // const response = await fetch(`http://localhost:5000/api/forum/${postId}/vote`, {
+   const response = await fetch(`process.env.PUBLIC_BASE_URL/api/forum/${postId}/vote`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ 

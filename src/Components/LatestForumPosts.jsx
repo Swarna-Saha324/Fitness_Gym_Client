@@ -1,6 +1,6 @@
 
 export default async function LatestForumPosts() {
-    const res = await fetch("http://localhost:5000/api/forums/latest", { cache: "no-store" });
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/forums/latest`, { cache: "no-store" });
     const posts = await res.json();
 
     if (!Array.isArray(posts)) {

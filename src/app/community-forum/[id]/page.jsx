@@ -10,8 +10,8 @@ export default function PostDetailsPage() {
 
     useEffect(() => {
         if (!id) return;
-
-        fetch(`http://localhost:5000/api/forums/${id}`)
+       // fetch(`http://localhost:5000/api/forums/${id}`)
+        fetch(`process.env.NEXT_PUBLIC_BASE_URL/api/forums/${id}`)
             .then((res) => {
                 if (!res.ok) throw new Error("Failed to fetch");
                 return res.json();

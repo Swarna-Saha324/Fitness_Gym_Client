@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import ClassCard from "@/components/ClassCard";
+import ClassCard from "@/Components/ClassCard";
 
 export default function AllClassesPage() {
   const [classes, setClasses] = useState([]);
@@ -16,7 +16,8 @@ export default function AllClassesPage() {
 
   useEffect(() => {
   setLoading(true);
-  fetch("http://localhost:5000/api/public-classes", { cache: "no-cache" })
+  //fetch("http://localhost:5000/api/public-classes", { cache: "no-cache" })
+  fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/public-classes"`, { cache: "no-cache" })
     .then((res) => res.json())
     .then((data) => {
       const classesArray = Array.isArray(data) ? data : [];

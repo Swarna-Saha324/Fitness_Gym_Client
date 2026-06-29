@@ -40,7 +40,7 @@ export default function CheckoutForm({ clientSecret, classDetails, userContext }
       
       // Hit database confirmation route array
       try {
-        const confirmRes = await fetch("http://localhost:5000/api/bookings/confirm", {
+        const confirmRes = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/bookings/confirm`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -61,7 +61,7 @@ export default function CheckoutForm({ clientSecret, classDetails, userContext }
         }
 
         if (confirmRes.ok) {
-  await fetch(`http://localhost:5000/api/classes/increment-booking/${classDetails.id}`, {
+  await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/classes/increment-booking/${classDetails.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userEmail: userContext.email })
@@ -69,7 +69,7 @@ export default function CheckoutForm({ clientSecret, classDetails, userContext }
     
     router.push("/dashboard/member/booked");
     
-   );
+   
   }
       } catch (err) {
         console.error("Confirmation routine error:", err);

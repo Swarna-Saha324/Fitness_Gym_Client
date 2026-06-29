@@ -17,19 +17,19 @@ export default function ClassDetailsClient({ initialClassData }) {
   const [hasBooked, setHasBooked] = useState(false);
   const [hasFavorited, setHasFavorited] = useState(false);
   useEffect(() => {
-      if (!id) return;
-  
-      // Fetch Class Data
-      fetch(`http://localhost:5000/api/classes/${id}`)
+     if (!id) return;
+ 
+      fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/classes/${id}`
+     )
         .then((res) => res.json())
         .then((data) => {
           setClassData(data);
           
           // Fetch User Specific Status
           if (session?.user?.email) {
-            fetch(`http://localhost:5000/api/classes/${id}/status`, {
+            fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/classes/${id}/status`, {
               method: "POST",
-              headers: { "Content-Type": "application/json" },
+             
               body: JSON.stringify({ email: session.user.email }),
             })
               .then((res) => res.json())
@@ -61,7 +61,9 @@ export default function ClassDetailsClient({ initialClassData }) {
         return;
       }
   
-      router.push(`/payment?classId=${id}&price=${classData.price}&name=${encodeURIComponent(classData.name)}`);
+      /*router.push(`/payment?classId=${id}&price=${classData.price}&name=${encodeURIComponent(classData.name)}`);*/
+      router.push(`/payment?classId=${id}&price=${classData?.price}&name=${encodeURIComponent(classData?.className || classData?.name || "Fitness Class")}`);
+
     };
   
     const handleFavoriteToggle = async () => {
@@ -72,8 +74,8 @@ export default function ClassDetailsClient({ initialClassData }) {
       // API logic for favorite toggle...
     };
   
-    if (loading) return <div>Loading...</div>;
-    if (!classData) return <div>Class not found</div>;
+    /*if (loading) return <div>Loading...</div>;
+    if (!classData) return <div>Class not found</div>;*/
   
     return (
       <div className="min-h-screen bg-[#090D1A] text-white py-12 px-4 sm:px-6 lg:px-8">

@@ -7,7 +7,8 @@ export default function ManageForums() {
   const [posts, setPosts] = useState([]);
 
   const fetchAllForums = () => {
-    fetch("http://localhost:5000/api/forums") // পাবলিক ফোরামের সব ডেটা রিড করার এন্ডপয়েন্ট
+    //fetch("http://localhost:5000/api/forums") 
+    fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/forums`) 
       .then((res) => res.json())
       .then((data) => setPosts(data || []))
       .catch((err) => console.error(err));
@@ -22,7 +23,7 @@ export default function ManageForums() {
     if (!confirmDelete) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/api/admin/forums/${id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/forums/${id}`, {
         method: "DELETE",
       });
 

@@ -13,7 +13,7 @@ export default function BookedClassesPage() {
     if (session?.user?.email) {
       setLoading(true);
       
-      fetch(`http://localhost:5000/api/admin/transactions`, {
+      fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/transactions`, {
         cache: "no-cache"
       })
         .then((res) => {

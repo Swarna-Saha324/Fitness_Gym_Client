@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import { authClient } from "@/lib/auth-client";
-import CheckoutForm from "@/components/CheckoutForm";
+import CheckoutForm from "@/Components/CheckoutForm";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
@@ -24,7 +24,7 @@ function PaymentContent() {
   useEffect(() => {
     if (!classId || !price) return;
 
-    fetch(`http://localhost:5000/api/classes/${classId}`)
+    fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/classes/${classId}`)
       .then((res) => res.json())
       .then((data) => {
         setClassDetails({
@@ -36,7 +36,7 @@ function PaymentContent() {
         });
       });
 
-    fetch("http://localhost:5000/api/create-payment-intent", {
+    fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/create-payment-intent`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ price: parseFloat(price) }),

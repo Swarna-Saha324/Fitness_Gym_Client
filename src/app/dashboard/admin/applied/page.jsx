@@ -10,7 +10,8 @@ export default function AppliedTrainers() {
   const [submitting, setSubmitting] = useState(false);
 
   const fetchApplications = () => {
-    fetch("http://localhost:5000/api/admin/applications/pending") // পেন্ডিং অ্যাপ্লিকেশনের এন্ডপয়েন্ট
+   // fetch("http://localhost:5000/api/admin/applications/pending") // পেন্ডিং অ্যাপ্লিকেশনের এন্ডপয়েন্ট
+   fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/applications/pending"`)
       .then((res) => res.json())
       .then((data) => setApplications(data))
       .catch((err) => console.error(err));
@@ -28,7 +29,8 @@ export default function AppliedTrainers() {
 
     setSubmitting(true);
     try {
-      const res = await fetch(`http://localhost:5000/api/admin/trainers/review/${selectedApp._id}`, {
+      //const res = await fetch(`http://localhost:5000/api/admin/trainers/review/${selectedApp._id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/trainers/review/${selectedApp._id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

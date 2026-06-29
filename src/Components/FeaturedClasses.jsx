@@ -2,7 +2,7 @@
 import ClassCard from './ClassCard';
 
 export default async function FeaturedClasses() {
-    const res = await fetch("http://localhost:5000/api/classes/featured", { cache: "no-store" });
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/classes/featured`, { cache: "no-store" });
     const classes = await res.json();
 
     if (!Array.isArray(classes)) {

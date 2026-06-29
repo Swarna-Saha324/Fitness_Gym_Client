@@ -13,7 +13,7 @@ export default function FavoriteClassesPage() {
   useEffect(() => {
     if (session?.user?.email) {
       setLoading(true);
-      fetch(`http://localhost:5000/api/favorites?email=${session.user.email}`, {
+      fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/favorites?email=${session.user.email}`, {
         cache: "no-cache",
       })
         .then((res) => {
@@ -36,7 +36,7 @@ export default function FavoriteClassesPage() {
   
   const handleRemove = async (id) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/favorites/${id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/favorites/${id}`, {
         method: "DELETE",
       });
       const data = await res.json();

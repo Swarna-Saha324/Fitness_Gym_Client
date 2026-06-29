@@ -7,7 +7,7 @@ export default function AdminOverview() {
   const [stats, setStats] = useState({ totalUsers: 0, totalClasses: 0, totalBooked: 0, totalRevenue: 0 });
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/admin/stats")
+    fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/stats`)
       .then((res) => res.json())
       .then((data) => setStats(data));
   }, []);

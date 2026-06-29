@@ -49,7 +49,8 @@ export default function AddForumPost() {
         downVotes: []
       };
 
-      const res = await fetch("http://localhost:5000/api/forums", {
+      //const res = await fetch("http://localhost:5000/api/forums", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/forums"`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(postPayload),

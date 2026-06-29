@@ -14,7 +14,7 @@ export default function MyClassesPage() {
   useEffect(() => {
     if (session?.user?.email) {
       setLoading(true);
-      fetch(`http://localhost:5000/api/trainer/classes?email=${session.user.email}`, {
+      fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/trainer/classes?email=${session.user.email}`, {
         cache: "no-cache",
       })
         .then(async (res) => {
@@ -44,7 +44,7 @@ export default function MyClassesPage() {
   const handleDelete = async (id) => {
     if (confirm("Are you absolutely certain you want to drop this class entry?")) {
       try {
-        const res = await fetch(`http://localhost:5000/api/classes/${id}`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/classes/${id}`, {
           method: "DELETE",
         });
         const data = await res.json();

@@ -38,7 +38,7 @@ export default function ApplyTrainerPage() {
     };
 
     try {
-      const response = await fetch("http://localhost:5000/api/apply-trainer", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/apply-trainer`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
