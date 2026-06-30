@@ -197,7 +197,18 @@ npm run dev
 
 ---
 
+# 🔑 Environment Variables
 
+Create a `.env` file and add the following variables:
+
+```env
+PORT=
+MONGODB_URI=
+JWT_SECRET=
+BETTER_AUTH_SECRET=
+BETTER_AUTH_URL=
+STRIPE_SECRET_KEY=
+CLIENT_URL=
 ---
 
 `
