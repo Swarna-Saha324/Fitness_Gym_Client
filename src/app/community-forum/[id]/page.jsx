@@ -11,7 +11,7 @@ export default function PostDetailsPage() {
     useEffect(() => {
         if (!id) return;
        // fetch(`http://localhost:5000/api/forums/${id}`)
-        fetch(`process.env.NEXT_PUBLIC_BASE_URL/api/forums/${id}`)
+        fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/forums/${id}`)
             .then((res) => {
                 if (!res.ok) throw new Error("Failed to fetch");
                 return res.json();
@@ -48,6 +48,10 @@ export default function PostDetailsPage() {
                         src={post?.image || "https://images.unsplash.com/photo-1534438327276-14e5300c3a48"} 
                         alt={post?.title}
                         className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                        onError={(e) => {
+    e.target.onerror = null; 
+    e.target.src = "https://images.unsplash.com/photo-1517838277536-f5f99be501cd";
+  }}
                     />
                 </div>
 

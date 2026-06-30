@@ -39,7 +39,7 @@ const handleVoteAction = async (postId, type) => {
 
   try {
    // const response = await fetch(`http://localhost:5000/api/forum/${postId}/vote`, {
-   const response = await fetch(`process.env.PUBLIC_BASE_URL/api/forum/${postId}/vote`, {
+   const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/forum/${postId}/vote`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ 
@@ -51,10 +51,10 @@ const handleVoteAction = async (postId, type) => {
     const data = await response.json();
     
    if (data.success) {
-        // স্টেট আপডেট লজিক: নিশ্চিত করুন প্রপার্টির নাম ব্যাকএন্ডের সাথে মিলছে
+       
         setPosts(prev => prev.map(p => {
           if (p._id === postId) {
-            // নতুন অ্যারে তৈরি করুন
+            
             const newUpVotes = type === "upvote" 
               ? [...new Set([...(p.upVotes || []), userEmail])] 
               : (p.upVotes || []).filter(e => e !== userEmail);

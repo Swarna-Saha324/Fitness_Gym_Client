@@ -11,7 +11,7 @@ export default function AppliedTrainers() {
 
   const fetchApplications = () => {
    // fetch("http://localhost:5000/api/admin/applications/pending") // পেন্ডিং অ্যাপ্লিকেশনের এন্ডপয়েন্ট
-   fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/applications/pending"`)
+   fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/applications/pending`)
       .then((res) => res.json())
       .then((data) => setApplications(data))
       .catch((err) => console.error(err));

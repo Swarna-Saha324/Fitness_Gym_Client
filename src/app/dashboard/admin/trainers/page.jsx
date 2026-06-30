@@ -7,7 +7,7 @@ export default function ManageTrainers() {
   const [trainers, setTrainers] = useState([]);
 
   const fetchTrainers = () => {
-    fetch(`${process.env.NEXT_PUBLIC_BASE_URL}0/api/trainers`) // আপনার প্ল্যাটফর্মের সব একটিভ ট্রেইনারদের রুট
+    fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/trainers`) 
       .then((res) => res.json())
       .then((data) => setTrainers(data || []))
       .catch((err) => console.error(err));

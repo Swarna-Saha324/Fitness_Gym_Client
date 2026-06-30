@@ -25,7 +25,8 @@ export const auth = betterAuth({
   socialProviders: {
         google: { 
             clientId: process.env.GOOGLE_CLIENT_ID ,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET 
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+            allowLinking: true,
         }, 
     },
 
@@ -43,19 +44,7 @@ export const auth = betterAuth({
       }
     }
   },
-  session:{
-
-    cookieCache:{
-
-      enabled: true,
-
-      strategy:"jwt",
-
-      maxAge:7*24*60*60
-
-    }
-
-  },
+  
 
 
 

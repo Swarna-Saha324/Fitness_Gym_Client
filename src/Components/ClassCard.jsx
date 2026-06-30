@@ -82,6 +82,7 @@ export default function ClassCard({ fitnessClass }) {
         <div className="pt-2">
           <Link
             href={`/classes/${_id}`}
+          // href={`/classes/${fitnessClass._id}`} 
             className="flex w-full h-10 items-center justify-center bg-slate-900 border border-slate-800 hover:border-[#F59E0B] text-slate-300 hover:text-[#F59E0B] text-xs font-bold rounded-xl transition-all shadow-sm"
           >
             View Details

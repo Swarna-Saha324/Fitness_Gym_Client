@@ -18,5 +18,7 @@ export default async function Page({ params }) {
   
   
   return <ClassDetailsClient initialClassData={data} id={id} />;
+//return <ClassDetailsClient initialClassData={data} id={id} session={session} />;
+
 
 }

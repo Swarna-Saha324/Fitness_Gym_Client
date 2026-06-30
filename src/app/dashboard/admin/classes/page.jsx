@@ -8,7 +8,7 @@ export default function ManageClasses() {
 
   const fetchAllClasses = () => {
     //fetch("http://localhost:5000/api/admin/all-classes") // ব্যাকএন্ডের অল-ক্লাস গেট এন্ডপয়েন্ট
-    fetch(`process.env.NEXT_PUBLIC_BASE_URL/api/admin/all-classes"`) 
+    fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/all-classes`) 
       .then((res) => res.json())
       .then((data) => setClasses(data || []))
       .catch((err) => console.error(err));
@@ -21,7 +21,7 @@ export default function ManageClasses() {
   const handleStatusChange = async (id, status) => {
     try {
      // const res = await fetch(`http://localhost:5000/api/admin/classes/${id}`, {
-     const res = await fetch(`process.env.NEXT_PUBLIC_BASE_URL/api/admin/classes/${id}`, {
+     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/classes/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status }),
@@ -42,7 +42,7 @@ export default function ManageClasses() {
 
     try {
       //const res = await fetch(`http://localhost:5000/api/admin/classes/${id}`, {
-       const res = await fetch(`process.env.NEXT_PUBLIC_BASE_URL/api/admin/classes/${id}`, {
+       const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/classes/${id}`, {
         
         method: "DELETE",
       });
